@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryForm } from "@/components/dashboard/admin/delivery-form";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getAllUsers } from "@/lib/actions";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { getDeliveryStatus } from "@/lib/utils";
 
 export default async function AdminDeliveriesPage() {
@@ -40,7 +40,7 @@ export default async function AdminDeliveriesPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <DeliveryForm clients={users} onSuccess={() => {}} />
+            <DeliveryForm clients={users} />
           </div>
 
           <div className="lg:col-span-2">

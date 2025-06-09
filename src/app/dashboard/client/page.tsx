@@ -3,6 +3,7 @@ import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
 import { getAuthSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export default async function ClientDashboardPage() {
   const session = await getAuthSession();
@@ -14,6 +15,17 @@ export default async function ClientDashboardPage() {
   }
 
   const deliveries = await getUserDeliveries(session.user.id);
+
+  // Calculate stats without progress
+  const stats = {
+    totalDeliveries: deliveries.length,
+    activeDeliveries: deliveries.filter(
+      (delivery) => delivery.status === "IN_TRANSIT"
+    ).length,
+    completedDeliveries: deliveries.filter(
+      (delivery) => delivery.status === "DELIVERED"
+    ).length,
+  };
 
   const deliveriesWithProgress = deliveries.map((delivery) => {
     const status = getDeliveryStatus(
@@ -31,19 +43,8 @@ export default async function ClientDashboardPage() {
       ...delivery,
       status,
       progress,
-      client: session.user,
     };
   });
-
-  const stats = {
-    totalDeliveries: deliveries.length,
-    activeDeliveries: deliveries.filter(
-      (delivery) => delivery.status === "IN_TRANSIT"
-    ).length,
-    completedDeliveries: deliveries.filter(
-      (delivery) => delivery.status === "DELIVERED"
-    ).length,
-  };
 
   return (
     <DashboardLayout>

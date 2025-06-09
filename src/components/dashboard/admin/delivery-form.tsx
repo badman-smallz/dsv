@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   clientId: z.string().min(1, "Please select a client"),
@@ -22,10 +23,11 @@ type FormData = z.infer<typeof formSchema>;
 
 interface DeliveryFormProps {
   clients: User[];
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export function DeliveryForm({ clients, onSuccess }: DeliveryFormProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -47,7 +49,8 @@ export function DeliveryForm({ clients, onSuccess }: DeliveryFormProps) {
       });
       toast.success("Delivery created successfully");
       reset();
-      onSuccess();
+      router.refresh();
+      onSuccess?.(); // Call onSuccess if it exists
     } catch (error) {
       toast.error("Failed to create delivery");
     } finally {

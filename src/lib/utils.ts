@@ -17,9 +17,9 @@ export function calculateDeliveryProgress(
   expectedDeliveryTime: Date,
   currentTime: Date = new Date()
 ): number {
-  const total = expectedDeliveryTime.getTime() - startTime.getTime();
-  const passed = currentTime.getTime() - startTime.getTime();
-  return Math.min((passed / total) * 100, 100);
+  const totalDuration = expectedDeliveryTime.getTime() - startTime.getTime();
+  const elapsedDuration = currentTime.getTime() - startTime.getTime();
+  return Math.min((elapsedDuration / totalDuration) * 100, 100);
 }
 
 export function isAdmin(email: string): boolean {

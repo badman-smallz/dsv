@@ -1,9 +1,13 @@
-import { prisma } from "@/lib/prisma";
+'use server';
+
+import prisma from "@/lib/prisma";
+import { revalidatePath } from 'next/cache';
 import { generateTrackingCode, getDeliveryStatus, isAdmin } from "@/lib/utils";
 import { UserRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { hash } from "bcryptjs";
 import { isAdminEmail } from "./config";
+import { calculateDeliveryProgress } from './utils';
 
 export async function registerUser(data: {
   email: string;
@@ -45,6 +49,9 @@ export async function updateUserStatus(userId: string, status: "PENDING" | "VERI
     },
   });
 
+  revalidatePath('/dashboard/admin/users'); // Revalidate the users page
+  revalidatePath('/dashboard/admin'); // Also revalidate the main admin dashboard if it shows user stats
+
   return user;
 }
 
@@ -60,13 +67,20 @@ export async function createDelivery(data: {
     data.startTime.getTime() + data.estimatedDuration * 60 * 1000
   );
 
-  return prisma.delivery.create({
+  const newDelivery = await prisma.delivery.create({
     data: {
       ...data,
       trackingCode,
       expectedDeliveryTime,
+      // TODO: Address missing createdById if necessary based on schema
     },
   });
+
+  revalidatePath('/dashboard/admin/deliveries'); // Revalidate the deliveries page
+  revalidatePath('/dashboard/admin'); // Also revalidate the main admin dashboard if it shows delivery stats
+  revalidatePath('/dashboard/client/deliveries'); // Also revalidate client deliveries page
+
+  return newDelivery;
 }
 
 export async function getDeliveryByTrackingCode(trackingCode: string) {
@@ -112,5 +126,37 @@ export async function getUserDeliveries(userId: string) {
     },
   });
 
-  return deliveries;
+  // Calculate progress for each delivery
+  return deliveries.map(delivery => ({
+    ...delivery,
+    progress: calculateDeliveryProgress(
+      delivery.startTime,
+      delivery.expectedDeliveryTime
+    )
+  }));
+}
+
+export async function getAllDeliveries() {
+  // Minimal query with no progress reference
+  const deliveries = await prisma.delivery.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      client: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      }
+    }
+  });
+
+  // Add progress calculation AFTER the query
+  return deliveries.map(delivery => ({
+    ...delivery,
+    progress: calculateDeliveryProgress(
+      delivery.startTime,
+      delivery.expectedDeliveryTime
+    )
+  }));
 } 

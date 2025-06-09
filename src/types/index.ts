@@ -1,7 +1,7 @@
 import { Delivery, User } from "@prisma/client";
 
 export type DeliveryWithProgress = Delivery & {
-  progress: number;
+  progress: number; // This is calculated, not stored in DB
   client: User;
 };
 

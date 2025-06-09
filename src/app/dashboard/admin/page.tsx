@@ -1,15 +1,11 @@
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { getAllUsers, getUserDeliveries } from "@/lib/actions";
+import { getAllUsers, getAllDeliveries } from "@/lib/actions";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboardPage() {
   const [users, deliveries] = await Promise.all([
     getAllUsers(),
-    prisma.delivery.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: { client: true },
-    }),
+    getAllDeliveries(),
   ]);
 
   const stats = {

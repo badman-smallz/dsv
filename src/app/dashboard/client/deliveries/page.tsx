@@ -2,10 +2,10 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth";
 
 export default async function ClientDeliveriesPage() {
-  const session = await auth();
+  const session = await getAuthSession();
   if (!session?.user?.id) return null;
 
   if (session.user.status !== "VERIFIED") {
@@ -58,7 +58,6 @@ export default async function ClientDeliveriesPage() {
       ...delivery,
       status,
       progress,
-      client: session.user,
     };
   });
 

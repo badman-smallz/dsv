@@ -1,8 +1,8 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions, DefaultSession } from "next-auth";
 import type { Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "./prisma";
+import prisma from "./prisma";
 import { compare } from "bcryptjs";
 import { adminConfig, isAdminEmail } from "./config";
 
