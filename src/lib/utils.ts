@@ -39,4 +39,15 @@ export function getDeliveryStatus(
   if (currentTime > new Date(expectedDeliveryTime.getTime() + buffer)) return "EXPIRED";
   if (progress >= 100) return "DELIVERED";
   return "IN_TRANSIT";
+}
+
+export function calculateProgress(delivery: any): number {
+  const now = Date.now();
+  const start = new Date(delivery.startTime).getTime();
+  const end = new Date(delivery.expectedDeliveryTime).getTime();
+  
+  if (now <= start) return 0;
+  if (now >= end) return 100;
+  
+  return Math.min(((now - start) / (end - start)) * 100, 100);
 } 

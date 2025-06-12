@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "DSV Global Logistics",
   description: "Global logistics and courier services",
+  icons: {
+        icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

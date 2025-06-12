@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { isAdminEmail } from "@/lib/config";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, password, name } = await req.json();
+    const { email, password, name } = await request.json();
 
     // Validate input
     if (!email || !password) {
@@ -28,21 +28,21 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await hash(password, 12);
 
     // Create user
-    const user = await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        name: name || "",
+        name,
         role: isAdminEmail(email) ? "ADMIN" : "CLIENT",
-        status: isAdminEmail(email) ? "VERIFIED" : "PENDING",
+        status: "PENDING",
       },
     });
 
     // Don't send the password back
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = newUser;
 
     return NextResponse.json(
       { message: "User registered successfully", user: userWithoutPassword },

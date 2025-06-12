@@ -82,23 +82,46 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // On sign-in, add custom claims from the user object
       if (user) {
-        return {
-          ...token,
-          role: user.role,
-        };
+        token.role = user.role;
+        token.status = user.status;
       }
+
+      // Admins don't need a database refresh for status
+      if (token.role === "ADMIN") {
+        return token;
+      }
+
+      // Handle a custom trigger to update the session
+      if (trigger === "update" && session?.user?.status) {
+        token.status = session.user.status;
+        return token;
+      }
+
+      // For client users, on subsequent requests, refresh status from the database
+      // Use `token.sub` which is the standard JWT subject and holds the user ID
+      if (token.sub) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+        });
+
+        if (dbUser) {
+          token.status = dbUser.status;
+          token.role = dbUser.role; // Role shouldn't change, but good practice
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          role: token.role,
-        },
-      };
+      if (token) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role as string;
+        session.user.status = token.status as string;
+      }
+      return session;
     },
   },
 };

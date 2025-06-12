@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface UserManagementProps {
   users: User[];
@@ -16,6 +17,7 @@ interface UserManagementProps {
 
 export function UserManagement({ users }: UserManagementProps) {
   const router = useRouter();
+  const { update } = useSession();
   const [loading, setLoading] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<"ALL" | UserRole>("ALL");
@@ -29,12 +31,14 @@ export function UserManagement({ users }: UserManagementProps) {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const handleUpdateStatus = async (userId: string, status: UserStatus) => {
+    const handleUpdateStatus = async (userId: string, status: UserStatus) => {
+    setLoading(userId);
     try {
-      setLoading(userId);
       await updateUserStatus(userId, status);
-      toast.success("User status updated successfully");
-      router.refresh();
+      toast.success(`User status updated to ${status.toLowerCase()}`);
+      // Refresh the session to reflect the change immediately
+      await update({ user: { status } });
+      router.refresh(); // Refresh data on the page
     } catch (error) {
       toast.error("Failed to update user status");
     } finally {

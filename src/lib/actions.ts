@@ -97,7 +97,14 @@ export async function getDeliveryByTrackingCode(trackingCode: string) {
     throw new Error("Delivery not found");
   }
 
-  return delivery;
+  const progress = calculateDeliveryProgress(delivery.startTime, delivery.expectedDeliveryTime);
+  const status = getDeliveryStatus(delivery.startTime, delivery.expectedDeliveryTime);
+
+  return {
+    ...delivery,
+    progress,
+    status,
+  };
 }
 
 export async function getAllUsers() {

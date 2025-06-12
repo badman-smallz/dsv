@@ -8,6 +8,7 @@ import { getDeliveryByTrackingCode } from "@/lib/actions";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 import * as z from "zod";
 import toast from "react-hot-toast";
 
@@ -18,6 +19,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function TrackDeliveryPage() {
+  const { data: session, status } = useSession();
   const [delivery, setDelivery] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,7 +44,11 @@ export default function TrackDeliveryPage() {
     }
   };
 
-  if (session.user.status !== "VERIFIED") {
+    if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (session && session.user.status !== "VERIFIED") {
     return (
       <DashboardLayout>
         <div className="p-6 max-w-6xl mx-auto">
