@@ -54,11 +54,12 @@ export default async function ClientDashboardPage() {
 
         <VerificationBanner />
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+          {/* On mobile, allow horizontal scroll for stats */}
           {session.user.status === "VERIFIED" ? (
             <>
               <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <svg
@@ -90,7 +91,7 @@ export default async function ClientDashboardPage() {
               </div>
 
               <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <svg
@@ -122,7 +123,7 @@ export default async function ClientDashboardPage() {
               </div>
 
               <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <svg
