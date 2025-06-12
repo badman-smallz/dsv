@@ -2,11 +2,12 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
-import { getAuthSession } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { VerificationBanner } from "@/components/dashboard/verification-banner";
 
 export default async function ClientDashboardPage() {
-  const session = await getAuthSession();
+  const session = await getServerSession(authOptions);
   console.log("Session in /dashboard/client:", session);
 
   if (!session?.user) {

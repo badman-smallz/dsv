@@ -139,22 +139,4 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-import { getServerSession } from "next-auth";
-
-export const getAuthSession = () => getServerSession(authOptions);
-
-export async function signIn(email: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user || user.role !== "CLIENT") {
-    throw new Error("Invalid credentials");
-  }
-
-  // Return the minimal required session data
-  return {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-    status: user.status,
-  };
-} 
+ 

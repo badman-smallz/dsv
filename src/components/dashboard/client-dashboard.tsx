@@ -2,7 +2,8 @@ import { getUserDeliveries } from "@/lib/actions";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getDeliveryStatus } from "@/lib/utils";
-import { getAuthSession } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import {
   ExclamationTriangleIcon,
   CubeIcon,
@@ -58,7 +59,7 @@ function EmptyState() {
 }
 
 export default async function ClientDashboard() {
-  const session = await getAuthSession();
+  const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
 
   // Only fetch deliveries for verified users

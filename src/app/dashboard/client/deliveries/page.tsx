@@ -2,12 +2,13 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
-import { getAuthSession } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import type { Delivery } from "@prisma/client";
 import type { DeliveryWithProgress } from "@/types";
 
 export default async function ClientDeliveriesPage() {
-  const session = await getAuthSession();
+  const session = await getServerSession(authOptions);
   if (!session?.user?.id) return null;
 
   if (session.user.status !== "VERIFIED") {
@@ -42,27 +43,7 @@ export default async function ClientDeliveriesPage() {
     );
   }
 
-  const deliveries = await getUserDeliveries(session.user.id);
-
-      const deliveriesWithProgress: DeliveryWithProgress[] = deliveries.map((delivery: Delivery) => {
-    const status = getDeliveryStatus(
-      delivery.startTime,
-      delivery.expectedDeliveryTime
-    );
-    const progress = Math.min(
-      ((Date.now() - delivery.startTime.getTime()) /
-        (delivery.expectedDeliveryTime.getTime() - delivery.startTime.getTime())) *
-        100,
-      100
-    );
-
-    return {
-      ...delivery,
-      status,
-      progress,
-      client: delivery.client,
-    };
-  });
+  const deliveriesWithProgress = await getUserDeliveries(session.user.id);
 
   return (
     <DashboardLayout>

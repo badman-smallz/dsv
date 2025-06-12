@@ -132,15 +132,20 @@ export async function getUserDeliveries(userId: string) {
     },
   });
 
-  // Calculate progress for each delivery
+  // Calculate progress and status for each delivery
   return deliveries.map((delivery) => {
     const progress = calculateDeliveryProgress(
+      delivery.startTime,
+      delivery.expectedDeliveryTime
+    );
+    const status = getDeliveryStatus(
       delivery.startTime,
       delivery.expectedDeliveryTime
     );
     return {
       ...delivery,
       progress,
+      status,
       client: delivery.client,
     } as DeliveryWithProgress;
   });

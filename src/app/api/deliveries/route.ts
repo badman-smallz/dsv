@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getAuthSession } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST() {
-  const session = await getAuthSession();
+  const session = await getServerSession(authOptions);
 
   // Reject unverified clients
   if (
