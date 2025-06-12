@@ -2,17 +2,30 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions, DefaultSession } from "next-auth";
 import type { Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "./prisma";
+import { prisma } from "./prisma";
 import { compare } from "bcryptjs";
 import { adminConfig, isAdminEmail } from "./config";
+import type { UserRole, UserStatus } from "@prisma/client";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      role: string;
-      status?: string;
+      role: UserRole;
+      status: UserStatus;
     } & DefaultSession["user"];
+  }
+  interface User {
+    role: UserRole;
+    status: UserStatus;
+  }
+}
+
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+  interface JWT {
+    role: UserRole;
+    status: UserStatus;
   }
 }
 
@@ -31,7 +44,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
         }
@@ -49,7 +62,7 @@ export const authOptions: NextAuthOptions = {
               name: "Admin User",
               role: "ADMIN",
               status: "VERIFIED"
-            } as any; // We need to cast to any here to match the expected User type
+            };
           }
           throw new Error("Invalid admin credentials");
         }
@@ -77,7 +90,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: isAdminEmail(user.email) ? "ADMIN" : "CLIENT",
           status: user.status,
-        } as any; // We need to cast to any here to match the expected User type
+        };
       },
     }),
   ],
@@ -115,11 +128,11 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+        async session({ session, token }) {
       if (token) {
         session.user.id = token.sub as string;
-        session.user.role = token.role as string;
-        session.user.status = token.status as string;
+        session.user.role = token.role;
+        session.user.status = token.status;
       }
       return session;
     },
@@ -130,7 +143,7 @@ import { getServerSession } from "next-auth";
 
 export const getAuthSession = () => getServerSession(authOptions);
 
-export async function signIn(email: string, password: string) {
+export async function signIn(email: string) {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || user.role !== "CLIENT") {

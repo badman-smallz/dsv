@@ -51,7 +51,7 @@ export function DeliveryForm({ clients, onSuccess }: DeliveryFormProps) {
       reset();
       router.refresh();
       onSuccess?.(); // Call onSuccess if it exists
-    } catch (error) {
+            } catch {
       toast.error("Failed to create delivery");
     } finally {
       setIsLoading(false);

@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { isAdminEmail } from "@/lib/config";
 import { NextResponse } from "next/server";
@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     });
 
     // Don't send the password back
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = newUser;
 
     return NextResponse.json(

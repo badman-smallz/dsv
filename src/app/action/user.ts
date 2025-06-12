@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 
 export async function updateUserStatus(userId: string, status: "PENDING" | "VERIFIED") {
-  const user = await prisma.user.update({
+    await prisma.user.update({
     where: {
       id: userId,
     },

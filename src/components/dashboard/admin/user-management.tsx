@@ -12,7 +12,6 @@ import { useSession } from "next-auth/react";
 
 interface UserManagementProps {
   users: User[];
-  onUpdate?: () => void;
 }
 
 export function UserManagement({ users }: UserManagementProps) {
@@ -39,7 +38,7 @@ export function UserManagement({ users }: UserManagementProps) {
       // Refresh the session to reflect the change immediately
       await update({ user: { status } });
       router.refresh(); // Refresh data on the page
-    } catch (error) {
+            } catch {
       toast.error("Failed to update user status");
     } finally {
       setLoading(null);
@@ -63,7 +62,7 @@ export function UserManagement({ users }: UserManagementProps) {
             <select
               className="border rounded-md px-3 py-2 text-sm"
               value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value as any)}
+              onChange={(e) => setFilterRole(e.target.value as "ALL" | UserRole)}
             >
               <option value="ALL">All Roles</option>
               <option value="ADMIN">Admin</option>
@@ -72,7 +71,7 @@ export function UserManagement({ users }: UserManagementProps) {
             <select
               className="border rounded-md px-3 py-2 text-sm"
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as any)}
+              onChange={(e) => setFilterStatus(e.target.value as "ALL" | UserStatus)}
             >
               <option value="ALL">All Statuses</option>
               <option value="PENDING">Pending</option>

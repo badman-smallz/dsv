@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
+import { DeliveryWithProgress } from "@/types";
 import * as z from "zod";
 import toast from "react-hot-toast";
 
@@ -20,7 +21,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function TrackDeliveryPage() {
   const { data: session, status } = useSession();
-  const [delivery, setDelivery] = useState<any>(null);
+    const [delivery, setDelivery] = useState<DeliveryWithProgress | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -36,7 +37,7 @@ export default function TrackDeliveryPage() {
       setIsLoading(true);
       const result = await getDeliveryByTrackingCode(data.trackingCode);
       setDelivery(result);
-    } catch (error) {
+            } catch {
       toast.error("Delivery not found");
       setDelivery(null);
     } finally {
@@ -61,7 +62,7 @@ export default function TrackDeliveryPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-yellow-700">
-                  Your account is pending admin verification. Delivery features will be unlocked once you're verified.
+                                    Your account is pending admin verification. Delivery features will be unlocked once you&apos;re verified.
                 </p>
               </div>
             </div>

@@ -3,7 +3,6 @@ import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
 import { getAuthSession } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { VerificationBanner } from "@/components/dashboard/verification-banner";
 
 export default async function ClientDashboardPage() {

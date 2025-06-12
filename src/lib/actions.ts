@@ -1,13 +1,12 @@
 'use server';
 
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { revalidatePath } from 'next/cache';
-import { generateTrackingCode, getDeliveryStatus, isAdmin } from "@/lib/utils";
-import { UserRole, UserStatus } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { generateTrackingCode, getDeliveryStatus } from "@/lib/utils";
 import { hash } from "bcryptjs";
 import { isAdminEmail } from "./config";
 import { calculateDeliveryProgress } from './utils';
+import { DeliveryWithProgress } from '@/types';
 
 export async function registerUser(data: {
   email: string;
@@ -134,13 +133,17 @@ export async function getUserDeliveries(userId: string) {
   });
 
   // Calculate progress for each delivery
-  return deliveries.map(delivery => ({
-    ...delivery,
-    progress: calculateDeliveryProgress(
+  return deliveries.map((delivery) => {
+    const progress = calculateDeliveryProgress(
       delivery.startTime,
       delivery.expectedDeliveryTime
-    )
-  }));
+    );
+    return {
+      ...delivery,
+      progress,
+      client: delivery.client,
+    } as DeliveryWithProgress;
+  });
 }
 
 export async function getAllDeliveries() {
@@ -152,18 +155,22 @@ export async function getAllDeliveries() {
         select: {
           id: true,
           name: true,
-          email: true
-        }
-      }
-    }
+          email: true,
+        },
+      },
+    },
   });
 
   // Add progress calculation AFTER the query
-  return deliveries.map(delivery => ({
-    ...delivery,
-    progress: calculateDeliveryProgress(
+  const deliveriesWithProgress = deliveries.map((delivery) => {
+    const progress = calculateDeliveryProgress(
       delivery.startTime,
       delivery.expectedDeliveryTime
-    )
-  }));
+    );
+    return {
+      ...delivery,
+      progress,
+    };
+  });
+  return deliveriesWithProgress;
 } 

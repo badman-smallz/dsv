@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { DeliveryForm } from "@/components/dashboard/admin/delivery-form";
 import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getAllUsers } from "@/lib/actions";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { getDeliveryStatus } from "@/lib/utils";
 
 export default async function AdminDeliveriesPage() {

@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from "@prisma/client";
+import { Delivery } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -41,7 +41,7 @@ export function getDeliveryStatus(
   return "IN_TRANSIT";
 }
 
-export function calculateProgress(delivery: any): number {
+export function calculateProgress(delivery: Delivery): number {
   const now = Date.now();
   const start = new Date(delivery.startTime).getTime();
   const end = new Date(delivery.expectedDeliveryTime).getTime();

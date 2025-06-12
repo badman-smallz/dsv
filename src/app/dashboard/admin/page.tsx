@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { getAllUsers, getAllDeliveries } from "@/lib/actions";
-import { prisma } from "@/lib/prisma";
+import type { User, Delivery } from "@prisma/client";
 
 export default async function AdminDashboardPage() {
   const [users, deliveries] = await Promise.all([
@@ -10,10 +10,10 @@ export default async function AdminDashboardPage() {
 
   const stats = {
     totalUsers: users.length,
-    pendingUsers: users.filter((user) => user.status === "PENDING").length,
+    pendingUsers: users.filter((user: User) => user.status === "PENDING").length,
     totalDeliveries: deliveries.length,
     activeDeliveries: deliveries.filter(
-      (delivery) => delivery.status === "IN_TRANSIT"
+      (delivery: Delivery) => delivery.status === "IN_TRANSIT"
     ).length,
   };
 

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function GlobalNetwork() {
     return (
       <section id="locations" className="py-20 bg-white">
@@ -28,7 +30,7 @@ export function GlobalNetwork() {
             </div>
           </div>
           <div className="w-full md:w-1/2 mt-10 md:mt-0">
-            <img src="/closeup-shot-beautiful-blue-sea-wave.jpg" alt="Ocean wave" className="rounded-lg shadow-lg"/>
+            <Image src="/closeup-shot-beautiful-blue-sea-wave.jpg" alt="Ocean wave" width={500} height={300} className="rounded-lg shadow-lg"/>
           </div>
         </div>
       </section>

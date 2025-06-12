@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 const newsArticles = [
     {
@@ -44,7 +45,7 @@ export function News() {
               const isExpanded = expandedCard === index;
               return (
                 <div key={article.title} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
-                  <img src={article.image} alt={article.title} className="h-48 w-full object-cover"/>
+                  <Image src={article.image} alt={article.title} width={500} height={300} className="h-48 w-full object-cover"/>
                   <div className="p-6">
                     <p className="text-sm text-gray-500 mb-2">{article.date}</p>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{article.title}</h3>

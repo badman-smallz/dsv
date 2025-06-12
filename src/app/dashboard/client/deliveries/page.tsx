@@ -3,6 +3,8 @@ import { DeliveryStatus } from "@/components/dashboard/delivery-status";
 import { getUserDeliveries } from "@/lib/actions";
 import { getDeliveryStatus } from "@/lib/utils";
 import { getAuthSession } from "@/lib/auth";
+import type { Delivery } from "@prisma/client";
+import type { DeliveryWithProgress } from "@/types";
 
 export default async function ClientDeliveriesPage() {
   const session = await getAuthSession();
@@ -30,7 +32,7 @@ export default async function ClientDeliveriesPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-yellow-700">
-                  Your account is pending admin verification. Delivery features will be unlocked once you're verified.
+                                    Your account is pending admin verification. Delivery features will be unlocked once you&apos;re verified.
                 </p>
               </div>
             </div>
@@ -42,7 +44,7 @@ export default async function ClientDeliveriesPage() {
 
   const deliveries = await getUserDeliveries(session.user.id);
 
-  const deliveriesWithProgress = deliveries.map((delivery) => {
+      const deliveriesWithProgress: DeliveryWithProgress[] = deliveries.map((delivery: Delivery) => {
     const status = getDeliveryStatus(
       delivery.startTime,
       delivery.expectedDeliveryTime
@@ -58,6 +60,7 @@ export default async function ClientDeliveriesPage() {
       ...delivery,
       status,
       progress,
+      client: delivery.client,
     };
   });
 
