@@ -43,7 +43,10 @@ const getWebSocketUrl = (url: string): string => {
     : url.replace('http', 'ws');
 };
 
-export const socket = io(process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3001");
+export const socket = io(
+  process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3001",
+  { transports: ["websocket"] } // Force WebSocket transport
+);
 
 export async function getSocket(userId: string, role: string): Promise<SocketInstance> {
   // Return existing socket if it exists and is connected

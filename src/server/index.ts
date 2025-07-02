@@ -61,10 +61,12 @@ app.prepare().then(() => {
   });
 
   const server = http.createServer();
-  const io = new Server(server, { cors: { origin: "*" } });
+  const io = new Server(server, {
+    cors: { origin: "*" } // Adjust in production
+  });
 
   io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
+    console.log("New connection:", socket.id);
   });
 
   server.listen(3001, () => {
