@@ -2,6 +2,8 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
 import SocketIOServer from '../lib/socket-server';
+import { Server } from "socket.io";
+import http from "http";
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -56,5 +58,16 @@ app.prepare().then(() => {
 
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
+  const server = http.createServer();
+  const io = new Server(server, { cors: { origin: "*" } });
+
+  io.on("connection", (socket) => {
+    console.log("New client connected:", socket.id);
+  });
+
+  server.listen(3001, () => {
+    console.log("WebSocket server running on port 3001");
   });
 });

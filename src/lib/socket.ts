@@ -25,7 +25,7 @@ const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECTION_DELAY = 1000; // Start with 1 second delay
 
 // Constants
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001';
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
 
 // Track connection state
 let isConnected = false;
@@ -42,6 +42,8 @@ const getWebSocketUrl = (url: string): string => {
     ? url.replace('https', 'wss')
     : url.replace('http', 'ws');
 };
+
+export const socket = io(process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3001");
 
 export async function getSocket(userId: string, role: string): Promise<SocketInstance> {
   // Return existing socket if it exists and is connected
