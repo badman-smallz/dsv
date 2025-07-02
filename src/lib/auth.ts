@@ -56,12 +56,25 @@ export const authOptions: NextAuthOptions = {
 
         if (adminUser) {
           if (adminUser.password === credentials.password) {
+            // Find or create the admin user in the database
+            const admin = await prisma.user.upsert({
+              where: { email: credentials.email },
+              update: {},
+              create: {
+                email: credentials.email,
+                name: "Admin User",
+                password: "", // Password is not used for admin login
+                role: "ADMIN",
+                status: "VERIFIED"
+              },
+            });
+
             return {
-              id: "admin-" + credentials.email,
-              email: credentials.email,
-              name: "Admin User",
-              role: "ADMIN",
-              status: "VERIFIED"
+              id: admin.id, // Use the database ID
+              email: admin.email,
+              name: admin.name || "Admin User",
+              role: admin.role,
+              status: admin.status
             };
           }
           throw new Error("Invalid admin credentials");
@@ -98,8 +111,10 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       // On sign-in, add custom claims from the user object
       if (user) {
+        token.sub = user.id;
         token.role = user.role;
         token.status = user.status;
+        console.log('JWT callback (user):', { sub: token.sub, role: token.role, status: token.status });
       }
 
       // Admins don't need a database refresh for status
@@ -128,15 +143,15 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-        async session({ session, token }) {
+    async session({ session, token }) {
       if (token) {
         session.user.id = token.sub as string;
         session.user.role = token.role;
         session.user.status = token.status;
+        console.log('Session callback:', session.user);
       }
       return session;
     },
   },
 };
-
  
